@@ -1,0 +1,70 @@
+// Selecionar o modelo digital de elevação
+var mde = ee.Image('USGS/SRTMGL1_003');
+
+// Definir as cores para o mapa hipsométrico
+var palette = ['00FFFF', '0000FF', '800080', 'FF00FF', 'FF0000', '800000'];
+
+// Definir a escala em metros para o mapa
+var scale = mde.projection().nominalScale().multiply(2);
+
+// Calcular a elevação em metros
+var elev = mde.divide(1000);
+
+// Criar uma imagem para representar as cores do mapa hipsométrico
+var colors = elev.visualize({palette: palette, min: 0, max: 6});
+
+// Adicionar a imagem ao mapa
+Map.addLayer(colors, {}, 'Hipsométrico');
+
+// Definir a opacidade da imagem para 50%
+Map.layers().get(0).setOpacity(0.5);
+
+// Adicionar uma legenda ao mapa
+var legend = ui.Panel({
+  style: {
+    position: 'bottom-right',
+    padding: '8px 15px'
+  }
+});
+
+// Adicionar título à legenda
+var legendTitle = ui.Label({
+  value: 'Elevação (m)',
+  style: {
+    fontWeight: 'bold',
+    fontSize: '18px',
+    margin: '0 0 4px 0',
+    padding: '0'
+  }
+});
+
+// Adicionar o painel da legenda ao mapa
+legend.add(legendTitle);
+
+// Adicionar as cores do mapa hipsométrico à legenda
+var makeRow = function(color, name) {
+  var colorBox = ui.Label({
+    style: {
+      backgroundColor: '#' + color,
+      padding: '8px',
+      margin: '0 0 4px 0'
+    }
+  });
+
+  var description = ui.Label({
+    value: name,
+    style: {margin: '0 0 4px 6px'}
+  });
+
+  return ui.Panel({
+    widgets: [colorBox, description],
+    layout: ui.Panel.Layout.Flow('horizontal')
+  });
+};
+
+for (var i = 0; i < palette.length; i++) {
+  legend.add(makeRow(palette[i], i));
+}
+
+// Adicionar a legenda ao mapa
+Map.add(legend);
