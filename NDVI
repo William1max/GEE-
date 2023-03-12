@@ -1,0 +1,27 @@
+// Importar a imagem de satélite
+var image = ee.ImageCollection('LANDSAT/LC08/C01/T1_SR')
+  .filterDate('2021-01-01', '2021-12-31')
+  .filterBounds(ee.Geometry.Rectangle(-46.9, -12.9, -37.8, -2.7))
+  .sort('CLOUD_COVER')
+  .first();
+
+// Calcular o NDVI
+var ndvi = image.normalizedDifference(['B5', 'B4']);
+
+// Definir os parâmetros de visualização
+var ndviParams = {
+  min: -1,
+  max: 1,
+  palette: ['blue', 'white', 'green']
+};
+
+// Adicionar a camada do NDVI ao mapa
+Map.addLayer(ndvi, ndviParams, 'NDVI');
+
+download_url = image.getDownloadURL({
+    'image': image,
+    'region': (-46.9, -12.9, -37.8, -2.7),
+    'name': 'img_B2E_down',
+})
+ 
+print(download_url)
