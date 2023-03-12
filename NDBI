@@ -1,0 +1,11 @@
+// Carrega a imagem Landsat 8
+var image = ee.Image('LANDSAT/LC08/C01/T1_SR/LC08_044034_20170105');
+
+// Calcula o NDBI
+var ndbi = image.normalizedDifference(['B5', 'B4']).rename('NDBI');
+
+// Define a paleta de cores para visualização do NDBI
+var palette = ['00FFFF', '0000FF'];
+
+// Adiciona a camada do NDBI ao mapa
+Map.addLayer(ndbi, {min:-1, max:1, palette:palette}, 'NDBI');
